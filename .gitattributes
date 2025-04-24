@@ -1,0 +1,12 @@
+# Define custom merge driver for FPKG-related files
+src/core/file_format/trp.cpp         merge=fpkg
+src/core/file_format/pkg.cpp         merge=fpkg
+src/core/file_format/pkg.h           merge=fpkg
+src/core/file_format/pkg_type.cpp    merge=fpkg
+src/core/file_format/pkg_type.h      merge=fpkg
+src/qt_gui/pkg_viewer.cpp            merge=fpkg
+src/qt_gui/pkg_viewer.h              merge=fpkg
+src/qt_gui/install_dir_select.cpp    merge=fpkg
+src/qt_gui/install_dir_select.h      merge=fpkg
+src/qt_gui/main_window.cpp           merge=fpkg
+CMakeLists.txt                       merge=fpkg
