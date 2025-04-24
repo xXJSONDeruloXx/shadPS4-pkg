@@ -1,25 +1,10 @@
 // SPDX-FileCopyrightText: Copyright 2024 shadPS4 Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "common/aes.h"
 #include "common/config.h"
 #include "common/logging/log.h"
 #include "common/path_util.h"
-#include "core/file_format/trp.h"
-
-static void DecryptEFSM(std::span<u8, 16> trophyKey, std::span<u8, 16> NPcommID,
-                        std::span<u8, 16> efsmIv, std::span<u8> ciphertext,
-                        std::span<u8> decrypted) {
-    // Step 1: Encrypt NPcommID
-    std::array<u8, 16> trophyIv{};
-    std::array<u8, 16> trpKey;
-    aes::encrypt_cbc(NPcommID.data(), NPcommID.size(), trophyKey.data(), trophyKey.size(),
-                     trophyIv.data(), trpKey.data(), trpKey.size(), false);
-
-    // Step 2: Decrypt EFSM
-    aes::decrypt_cbc(ciphertext.data(), ciphertext.size(), trpKey.data(), trpKey.size(),
-                     efsmIv.data(), decrypted.data(), decrypted.size(), nullptr);
-}
+#include "trp.h"
 
 TRP::TRP() = default;
 TRP::~TRP() = default;
@@ -69,7 +54,7 @@ bool TRP::Extract(const std::filesystem::path& trophyPath, const std::string tit
         return false;
     }
 
-    std::array<u8, 16> user_key{};
+    std::array<CryptoPP::byte, 16> user_key{};
     hexToBytes(user_key_str.c_str(), user_key.data());
 
     for (int index = 0; const auto& it : std::filesystem::directory_iterator(gameSysDir)) {
@@ -130,7 +115,7 @@ bool TRP::Extract(const std::filesystem::path& trophyPath, const std::string tit
                         return false;
                     }
                     file.Read(ESFM);
-                    DecryptEFSM(user_key, np_comm_id, esfmIv, ESFM, XML); // decrypt
+                    crypto.decryptEFSM(user_key, np_comm_id, esfmIv, ESFM, XML); // decrypt
                     removePadding(XML);
                     std::string xml_name = entry.entry_name;
                     size_t pos = xml_name.find("ESFM");
