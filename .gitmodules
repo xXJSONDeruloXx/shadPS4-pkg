@@ -115,3 +115,7 @@
 	path = externals/MoltenVK/cereal
 	url = https://github.com/USCiLab/cereal
 	shallow = true
+[submodule "externals/libusb"]
+	path = externals/libusb
+	url = https://github.com/shadps4-emu/ext-libusb.git
+	shallow = true

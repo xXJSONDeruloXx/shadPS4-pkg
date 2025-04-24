@@ -36,6 +36,9 @@ BRANCH_NAME="pkg-feature-restoration-$(date +%Y%m%d%H%M%S)"
 git checkout -b $BRANCH_NAME
 echo -e "${GREEN}Created working branch: $BRANCH_NAME${NC}"
 
+# Make restored_files directory
+mkdir -p restored_files
+
 # Function to restore deleted files and modified files from a commit
 restore_commit() {
     local commit=$1
@@ -48,17 +51,17 @@ restore_commit() {
     mkdir -p restored_files/deleted_$commit_index
     mkdir -p restored_files/modified_$commit_index
     
-    # Extract deleted files
+    # Extract deleted files - Fix: use a cleaner approach to extract just the file paths
     echo -e "${YELLOW}Extracting deleted files from commit $commit${NC}"
-    git show $commit --name-status | grep ^D | cut -f2- > restored_files/deleted_$commit_index/file_list.txt
+    git diff-tree -r --diff-filter=D --name-only $commit > restored_files/deleted_$commit_index/file_list.txt
     
-    # Extract modified files
+    # Extract modified files - Fix: use a cleaner approach to extract just the file paths
     echo -e "${YELLOW}Extracting modified files from commit $commit${NC}"
-    git show $commit --name-status | grep ^M | cut -f2- > restored_files/modified_$commit_index/file_list.txt
+    git diff-tree -r --diff-filter=M --name-only $commit > restored_files/modified_$commit_index/file_list.txt
     
     # Restore deleted files from the version before deletion
     echo -e "${GREEN}Restoring deleted files...${NC}"
-    while read file; do
+    while IFS= read -r file; do
         if [[ -n "$file" ]]; then
             # Create directory if it doesn't exist
             dir=$(dirname "$file")
@@ -72,7 +75,7 @@ restore_commit() {
     
     # Revert changes for modified files
     echo -e "${GREEN}Reverting changes in modified files...${NC}"
-    while read file; do
+    while IFS= read -r file; do
         if [[ -n "$file" ]]; then
             if [[ -f "$file" ]]; then
                 # Save current version for potential conflict resolution
