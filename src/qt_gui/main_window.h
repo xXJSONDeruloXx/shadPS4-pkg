@@ -22,6 +22,7 @@
 #include "game_list_utils.h"
 #include "main_window_themes.h"
 #include "main_window_ui.h"
+#include "pkg_viewer.h"
 
 class GameListFrame;
 
@@ -35,6 +36,7 @@ public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
     bool Init();
+    void InstallDragDropPkg(std::filesystem::path file, int pkgNum, int nPkg);
     void InstallDirectory();
     void StartGame();
     void PauseGame();
@@ -70,6 +72,7 @@ private:
     void SetLastUsedTheme();
     void SetLastIconSizeBullet();
     void SetUiIcons(bool isWhite);
+    void InstallPkg();
     void BootGame();
     void AddRecentFiles(QString filePath);
     void LoadTranslation();
@@ -86,6 +89,7 @@ private:
     QActionGroup* m_list_mode_act_group = nullptr;
     QActionGroup* m_theme_act_group = nullptr;
     QActionGroup* m_recent_files_group = nullptr;
+    PKG pkg;
     // Dockable widget frames
     WindowThemes m_window_themes;
     GameListUtils m_game_list_utils;
@@ -113,6 +117,20 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event1) override {
         if (event1->mimeData()->hasUrls()) {
             event1->acceptProposedAction();
+        }
+    }
+
+    void dropEvent(QDropEvent* event1) override {
+        const QMimeData* mimeData = event1->mimeData();
+        if (mimeData->hasUrls()) {
+            QList<QUrl> urlList = mimeData->urls();
+            int pkgNum = 0;
+            int nPkg = urlList.size();
+            for (const QUrl& url : urlList) {
+                pkgNum++;
+                std::filesystem::path path = Common::FS::PathFromQString(url.toLocalFile());
+                InstallDragDropPkg(path, pkgNum, nPkg);
+            }
         }
     }
 

@@ -20,6 +20,10 @@ static void DecryptEFSM(std::span<u8, 16> trophyKey, std::span<u8, 16> NPcommID,
     aes::decrypt_cbc(ciphertext.data(), ciphertext.size(), trpKey.data(), trpKey.size(),
                      efsmIv.data(), decrypted.data(), decrypted.size(), nullptr);
 }
+#include "common/config.h"
+#include "common/logging/log.h"
+#include "common/path_util.h"
+#include "trp.h"
 
 TRP::TRP() = default;
 TRP::~TRP() = default;
@@ -130,7 +134,7 @@ bool TRP::Extract(const std::filesystem::path& trophyPath, const std::string tit
                         return false;
                     }
                     file.Read(ESFM);
-                    DecryptEFSM(user_key, np_comm_id, esfmIv, ESFM, XML); // decrypt
+                    crypto.decryptEFSM(user_key, np_comm_id, esfmIv, ESFM, XML); // decrypt
                     removePadding(XML);
                     std::string xml_name = entry.entry_name;
                     size_t pos = xml_name.find("ESFM");
