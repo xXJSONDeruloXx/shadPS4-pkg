@@ -1,6 +1,9 @@
 #!/bin/bash
-# Comprehensive script to restore both deleted files and revert changes from target commits
-# This script first makes sure we have a clean working directory and bases changes on your main branch
+# Comprehensive script to restore PKG feature functionality
+# This script:
+# 1. Syncs with upstream shadps4-emu/shadPS4 main branch
+# 2. Restores deleted PKG files and reverts changes from target commits
+# 3. Pushes the restored branch to your fork (xXJSONDeruloXx/shadPS4-pkg)
 
 # Define color codes for output
 RED='\033[0;31m'
@@ -9,7 +12,13 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== Starting comprehensive restoration process ===${NC}"
+# Configuration
+UPSTREAM_REPO="https://github.com/shadps4-emu/shadPS4.git"
+UPSTREAM_BRANCH="main"
+YOUR_FORK="xXJSONDeruloXx/shadPS4-pkg"
+YOUR_REMOTE="origin" # Assuming your fork is configured as origin
+
+echo -e "${BLUE}=== Starting comprehensive PKG feature restoration process ===${NC}"
 
 # Check if there are uncommitted changes
 if [[ -n $(git status --porcelain) ]]; then
@@ -23,44 +32,30 @@ fi
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo -e "${GREEN}Current branch: $CURRENT_BRANCH${NC}"
 
-# Find the default branch (main or master) from your origin
-echo -e "${BLUE}Determining your default branch...${NC}"
-DEFAULT_BRANCH=$(git remote show origin | grep "HEAD branch" | sed 's/.*: //')
-if [[ -z "$DEFAULT_BRANCH" ]]; then
-    DEFAULT_BRANCH="main"
-    echo -e "${YELLOW}Could not determine default branch, assuming 'main'${NC}"
-else
-    echo -e "${GREEN}Your default branch is: $DEFAULT_BRANCH${NC}"
+# Check if upstream remote exists, if not add it
+if ! git remote | grep -q "upstream"; then
+    echo -e "${BLUE}Adding upstream remote: $UPSTREAM_REPO${NC}"
+    git remote add upstream $UPSTREAM_REPO
 fi
 
-# Create a working branch from your default branch
+# Update upstream remote URL in case it changed
+git remote set-url upstream $UPSTREAM_REPO
+
+# Fetch latest from upstream
+echo -e "${BLUE}Fetching latest changes from upstream repository...${NC}"
+git fetch upstream
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error: Failed to fetch from upstream.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Successfully fetched from upstream.${NC}"
+
+# Create a new branch from upstream's main branch
 BRANCH_NAME="pkg-feature-restoration-$(date +%Y%m%d%H%M%S)"
-echo -e "${BLUE}Creating new branch $BRANCH_NAME from your $DEFAULT_BRANCH branch...${NC}"
-git checkout $DEFAULT_BRANCH
+echo -e "${BLUE}Creating new branch '$BRANCH_NAME' from upstream/$UPSTREAM_BRANCH...${NC}"
+git checkout -b $BRANCH_NAME upstream/$UPSTREAM_BRANCH
 if [ $? -ne 0 ]; then
-    echo -e "${YELLOW}Branch $DEFAULT_BRANCH not found. Trying 'master'...${NC}"
-    git checkout master
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Error: Could not find your main or master branch.${NC}"
-        echo -e "${YELLOW}Returning to original branch: $CURRENT_BRANCH${NC}"
-        git checkout $CURRENT_BRANCH
-        exit 1
-    fi
-    DEFAULT_BRANCH="master"
-fi
-
-# Make sure we're up to date
-git pull origin $DEFAULT_BRANCH
-if [ $? -ne 0 ]; then
-    echo -e "${YELLOW}Warning: Could not pull latest changes from origin/$DEFAULT_BRANCH.${NC}"
-    echo -e "${YELLOW}Continuing with local version...${NC}"
-fi
-
-# Create the new branch
-git checkout -b $BRANCH_NAME
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Error: Failed to create branch $BRANCH_NAME.${NC}"
-    echo -e "${YELLOW}Returning to original branch: $CURRENT_BRANCH${NC}"
+    echo -e "${RED}Error: Failed to create branch from upstream/$UPSTREAM_BRANCH.${NC}"
     git checkout $CURRENT_BRANCH
     exit 1
 fi
@@ -235,7 +230,22 @@ Also added .gitattributes to help manage these files in future merges."
 
 echo -e "${BLUE}=== Restoration process complete ===${NC}"
 echo -e "${GREEN}The PKG feature has been restored on branch: $BRANCH_NAME${NC}"
-echo -e "${YELLOW}Branch is based on your $DEFAULT_BRANCH branch with PKG feature restored.${NC}"
+
+# Push to your fork
+echo -e "${BLUE}Would you like to push this branch to your fork ($YOUR_FORK)? [y/N]${NC}"
+read -r answer
+if [[ "$answer" =~ ^[Yy]$ ]]; then
+    echo -e "${BLUE}Pushing to your fork...${NC}"
+    git push $YOUR_REMOTE $BRANCH_NAME
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Successfully pushed to $YOUR_REMOTE/$BRANCH_NAME${NC}"
+        echo -e "${BLUE}Branch URL: https://github.com/$YOUR_FORK/tree/$BRANCH_NAME${NC}"
+    else
+        echo -e "${RED}Failed to push to your fork.${NC}"
+        echo -e "${YELLOW}You can manually push later with:${NC}"
+        echo -e "  git push $YOUR_REMOTE $BRANCH_NAME"
+    fi
+fi
 
 # Option to return to original branch
 echo -e "${YELLOW}Do you want to return to your original branch: $CURRENT_BRANCH? [y/N]${NC}"
