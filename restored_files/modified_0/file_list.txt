@@ -1,0 +1,6 @@
+CMakeLists.txt
+src/core/file_format/trp.cpp
+src/core/file_format/trp.h
+src/qt_gui/main_window.cpp
+src/qt_gui/main_window.h
+src/qt_gui/main_window_ui.h
