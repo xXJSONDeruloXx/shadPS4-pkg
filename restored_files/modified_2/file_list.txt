@@ -1,0 +1,5 @@
+.gitmodules
+CMakeLists.txt
+externals/CMakeLists.txt
+src/core/file_format/trp.cpp
+src/core/module.cpp
