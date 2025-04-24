@@ -1,39 +1,8 @@
-# PKG feature preservation configuration
-
-# Crypto-related files - always prefer our version in merges
-src/core/crypto/crypto.cpp merge=ours
-src/core/crypto/crypto.h merge=ours
-src/core/crypto/keys.h merge=ours
-
-# PKG file format handling
-src/core/file_format/pkg.cpp merge=ours
-src/core/file_format/pkg.h merge=ours
-src/core/file_format/pkg_type.cpp merge=ours
-src/core/file_format/pkg_type.h merge=ours
-
-# PKG loader components
-src/core/loader.cpp merge=ours
-src/core/loader.h merge=ours
-
-# PKG GUI components
-src/qt_gui/pkg_viewer.cpp merge=ours
-src/qt_gui/pkg_viewer.h merge=ours
-src/qt_gui/install_dir_select.cpp merge=ours
-src/qt_gui/install_dir_select.h merge=ours
-
-# CryptoPP dependencies
+# PKG feature preservation
+# These files should be preserved during merges
+src/core/crypto/* merge=ours
+src/core/file_format/pkg* merge=ours
+src/qt_gui/pkg_viewer* merge=ours
+src/core/loader* merge=ours
+src/qt_gui/install_dir_select* merge=ours
 cmake/Findcryptopp.cmake merge=ours
-
-# Conflicting modifications in main files that need special handling
-# These should trigger a manual review during merges
-src/qt_gui/main_window.cpp merge=merge-pkg-feature
-src/qt_gui/main_window.h merge=merge-pkg-feature
-src/common/config.cpp merge=merge-pkg-feature
-src/common/config.h merge=merge-pkg-feature
-
-# Prevent removal of crypto headers added as cryptopp replacements
-src/common/aes.h merge-strategy=ours
-src/common/sha1.h merge-strategy=ours
-
-# Ensure documentation is preserved
-documents/Quickstart/2.png merge=ours
