@@ -1,0 +1,7 @@
+CMakeLists.txt
+documents/Quickstart/Quickstart.md
+documents/building-linux.md
+src/common/config.cpp
+src/common/config.h
+src/qt_gui/gui_context_menus.h
+src/qt_gui/main_window.cpp

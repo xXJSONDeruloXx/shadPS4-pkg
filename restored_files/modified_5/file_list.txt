@@ -1,0 +1,1 @@
+src/qt_gui/translations/en_US.ts

@@ -1,0 +1,8 @@
+# PKG feature preservation
+# These files should be preserved during merges
+src/core/crypto/* merge=ours
+src/core/file_format/pkg* merge=ours
+src/qt_gui/pkg_viewer* merge=ours
+src/core/loader* merge=ours
+src/qt_gui/install_dir_select* merge=ours
+cmake/Findcryptopp.cmake merge=ours
