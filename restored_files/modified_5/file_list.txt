@@ -1,0 +1,2 @@
+751a23af0f5a9612b8e28af1400896a3026ee331
+src/qt_gui/translations/en_US.ts

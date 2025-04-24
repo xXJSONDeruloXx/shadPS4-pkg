@@ -1,0 +1,6 @@
+be7d646e8314ccf1f125818f3589b78d8e3262eb
+.gitmodules
+CMakeLists.txt
+externals/CMakeLists.txt
+src/core/file_format/trp.cpp
+src/core/module.cpp

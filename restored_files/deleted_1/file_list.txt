@@ -1,0 +1,7 @@
+31e1d4f839118b59398ca6f871929fc0e286e13c
+documents/Quickstart/2.png
+src/core/file_format/pkg.cpp
+src/core/loader.cpp
+src/core/loader.h
+src/qt_gui/install_dir_select.cpp
+src/qt_gui/install_dir_select.h

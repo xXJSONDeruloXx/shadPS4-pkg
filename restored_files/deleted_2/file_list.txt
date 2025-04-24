@@ -1,0 +1,3 @@
+be7d646e8314ccf1f125818f3589b78d8e3262eb
+externals/cryptopp
+externals/cryptopp-cmake

@@ -1,0 +1,9 @@
+be22674f8c1ac84e1cff89947ff4a6753070f21b
+src/core/crypto/crypto.cpp
+src/core/crypto/crypto.h
+src/core/crypto/keys.h
+src/core/file_format/pkg.h
+src/core/file_format/pkg_type.cpp
+src/core/file_format/pkg_type.h
+src/qt_gui/pkg_viewer.cpp
+src/qt_gui/pkg_viewer.h

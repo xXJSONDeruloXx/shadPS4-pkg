@@ -1,0 +1,6 @@
+faae1218fa0b590e4e3f55b7d41780eec8c281f9
+src/common/config.cpp
+src/common/config.h
+src/qt_gui/settings_dialog.cpp
+src/qt_gui/settings_dialog.ui
+src/qt_gui/translations/en_US.ts
